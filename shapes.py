@@ -1,4 +1,3 @@
-import config
 from random import random
 
 BLINKER = (
@@ -15,7 +14,8 @@ GLIDER = (
     (2, 3)
 )
 
-RANDOM = ((x, y) for x in range(config.GRID_SIZE) for y in range(config.GRID_SIZE) if random() > 0.5)
+def get_random_shape(grid_size):
+    return ((x, y) for x in range(grid_size) for y in range(grid_size) if random() > 0.5)
 
 GOSPER = ((1, 5),
           (1, 6),
@@ -59,6 +59,5 @@ GOSPER = ((1, 5),
 shapes_map = {
     'blinker': BLINKER,
     'glider': GLIDER,
-    'gosper': GOSPER,
-    'random': RANDOM
+    'gosper': GOSPER
 }

@@ -113,12 +113,14 @@ def game_loop(init_shape, grid_size, iterations):
 
     screen = pygame.display.set_mode( (window_width, window_height), 
             pygame.RESIZABLE, pygame.DOUBLEBUF)    
-    # clock = pygame.time.Clock()
+    clock = pygame.time.Clock()
 
     board = initialize_data((grid_size, grid_size), init_shape)
     alive_history = [len(board)]
-    display_board(screen, board)
-    
+    display_board(screen, board)        
+
+    fps = []
+
     for _ in range(iterations):
         board = update(board, grid_size)
         alive_history.append(len(board))
@@ -133,21 +135,24 @@ def game_loop(init_shape, grid_size, iterations):
             if event.type == pygame.VIDEORESIZE:                
                 screen = pygame.display.set_mode((event.w, event.h),
                                                 pygame.RESIZABLE)
+                                            
+        clock.tick()
+        fps.append(clock.get_fps())        
 
         pygame.display.update()
 
-    return alive_history
+    return alive_history, fps
 
 
 if __name__ == '__main__':
-    init_shape = input_parser.get_init_shape()
     grid_size = input_parser.get_grid_size()
+    init_shape = input_parser.get_init_shape(grid_size)    
     iterations = input_parser.get_iterations()
 
     start_time = time.time()
     print("Simulation started at: " + time.ctime(start_time))
 
-    alive_history = game_loop(init_shape, grid_size, iterations)
+    alive_history, fps = game_loop(init_shape, grid_size, iterations)
     
     end_time = time.time()
     print("Simulation ended at: " + time.ctime(end_time))
@@ -155,10 +160,17 @@ if __name__ == '__main__':
     
     total_alive = sum(alive_history)
     total_dead = len(alive_history) * grid_size * grid_size - total_alive
-    
-    print(f"Time elapsed(execution time): {(end_time - start_time) * 1000} milliseconds") 
+
+    milliseconds = (end_time - start_time) * 1000
+    print(f"Time elapsed(execution time): {milliseconds:.4f} milliseconds = {milliseconds/1000:4f} seconds") 
+    print(f"Total Frames: {iterations}, Average FPS: {sum(fps) / len(fps):.2f}")    
     print(f"Total Alive Cells: {total_alive}")
     print(f"Total Dead Alive: {total_dead}")
+
+    # import matplotlib.pyplot as plt
+
+    # plt.plot(range(iterations + 1), alive_history)
+    # plt.plot(range(iterations + 1), list(map(lambda x: (grid_size * grid_size) - x, alive_history)))
+    # plt.show()
     
 
-    
